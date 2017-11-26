@@ -17,11 +17,14 @@
 
 package randomorg
 
+import (
+	"github.com/linkosmos/mapop"
+)
 // Basic commands
 // see https://api.random.org/json-rpc/1/basic
 
 // GenerateIntegers generates n number of random integers in the range from min to max.
-func (r *Random) GenerateIntegers(n int, min, max int64) ([]int64, error) {
+func (r *Random) GenerateIntegers(n int, min, max int64, p map[string]interface{}) ([]int64, error) {
 	if n < 1 || n > 1e4 {
 		return nil, ErrParamRange
 	}
@@ -29,12 +32,14 @@ func (r *Random) GenerateIntegers(n int, min, max int64) ([]int64, error) {
 		return nil, ErrParamRange
 	}
 
-	params := map[string]interface{}{
+	params_default := map[string]interface{}{
 		"n":   n,
 		"min": min,
 		"max": max,
 	}
 
+	params := mapop.Merge(params_default, p)
+	
 	values, err := r.requestCommand("generateIntegers", params)
 	if err != nil {
 		return nil, err
